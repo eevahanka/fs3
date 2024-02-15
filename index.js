@@ -4,6 +4,9 @@ const app = express()
 
 app.use(express.json())
 
+var morgan = require('morgan')
+app.use(morgan('tiny'))
+
 let persons = [
 { 
   "id": 1,
@@ -92,12 +95,10 @@ app.get('/api/persons', (request, response) => {
 
 const get_date_str = () =>{
   const date = new Date()
-  console.log(date)
   return(date)
 }
 
 const getInfoHtml = (nro_of_persons, date) => {
-  console.log(date)
   return(`
 <!DOCTYPE html>
     <html>
@@ -117,11 +118,15 @@ const getInfoHtml = (nro_of_persons, date) => {
 app.get('/info', (request, response)=> {
   const nro_of_persons = persons.length
   const date = get_date_str()
-  console.log(date)
   response.send(
     getInfoHtml(nro_of_persons, date)
   )
 })
+
+var morgan = require('morgan')
+
+
+app.use(morgan('tiny'))
 
 const PORT = 3001
 app.listen(PORT, () => {
