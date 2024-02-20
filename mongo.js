@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-
+console.log('kutsuttiin mongo.js backistä')
 
 if (process.argv.length<3) {
   console.log('give password as argument')
@@ -13,11 +13,15 @@ const url = `mongodb+srv://eevahanka:${password}@cluster0.fol4mxc.mongodb.net/?r
 
 mongoose.set('strictQuery',false)
 
-mongoose.connect(url)
-
-const personSchema = new mongoose.Schema({
-  name: String,
-  number: String,
+mongoose.connect(url).then(() => {
+  const personSchema = new mongoose.Schema({
+    name: String,
+    number: String,
+  })
+  const person = new Person({
+    name: 'pekka testeri',
+    number: '0100100',
+  })
 })
 
 const Person = mongoose.model('Person', personSchema)

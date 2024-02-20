@@ -41,6 +41,8 @@ app.use(morgan(function (tokens, req, res) {
   ].join(' ')
 }))
 
+
+
 let persons = [
 { 
   "id": 1,
@@ -89,7 +91,7 @@ const generateId = () => {
   return id
 }
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
   // console.log(request.body) 
   const body = request.body
   if ((!body.name) || (!body.number)){
@@ -114,31 +116,17 @@ app.post('/api/persons', (request, response) => {
   person.save().then(savedPerson =>{
     response.json(person)
   })
+  .catch(error => next(error))
 })
-// app.post('/api/notes', (request, response) => {
-//   const body = request.body
 
-//   if (body.content === undefined) {
-//     return response.status(400).json({ error: 'content missing' })
-//   }
-
-//   const note = new Note({
-//     content: body.content,
-//     important: body.important || false,
-//   })
-
-//   note.save().then(savedNote => {
-//     response.json(savedNote)
-//   })
-// })
-
-
-app.delete('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id)
-  persons = persons.filter(person => person.id !== id)
-
-  response.status(204).end()
+app.delete('/api/persons/:id', (request, response, next) => {
+  Person.findByIdAndDelete(request.params.id)
+    .then(result => {
+      response.status(204).end()
+    })
+    .catch(error => next(error))
 })
+
 
 app.get('/api/persons', (request, response) => {
   Person.find({}).then(persons=>{
@@ -177,10 +165,18 @@ app.get('/info', (request, response)=> {
   )
 })
 
-var morgan = require('morgan')
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
 
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  } 
 
-app.use(morgan('tiny'))
+  next(error)
+}
+
+// this has to be the last loaded middleware, also all the routes should be registered before this!
+app.use(errorHandler)
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {
