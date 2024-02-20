@@ -1,4 +1,6 @@
 const http = require('http')
+require('dotenv').config()
+
 const express = require('express')
 const app = express()
 
@@ -7,6 +9,8 @@ app.use(express.json())
 const cors = require('cors')
 
 app.use(cors())
+
+const Person = require('./models/person')
 
 app.use(express.static('dist'))
 
@@ -69,9 +73,9 @@ function getRandomInt(max) {
 
 app.get('/api/persons/:id', (request, response) => {
   const id = Number(request.params.id)
-  console.log(id)
+  // console.log(id)
   const person = persons.find(person => person.id === id)
-  console.log(person)
+  // console.log(person)
   if (person) {
     response.json(person)
   } else {
@@ -120,7 +124,10 @@ app.delete('/api/persons/:id', (request, response) => {
 })
 
 app.get('/api/persons', (request, response) => {
-  response.json(persons)
+  Person.find({}).then(persons=>{
+    response.json(persons)
+  })  
+  
 })
 
 const get_date_str = () =>{
@@ -158,7 +165,7 @@ var morgan = require('morgan')
 
 app.use(morgan('tiny'))
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })

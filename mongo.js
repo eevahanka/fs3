@@ -40,10 +40,8 @@ if (process.argv.length<4){
     })}
 
 if (process.argv.length>4) {
-    console.log('hllo')
     const nimi = process.argv[3]
     const number = process.argv[4]
-    console.log(number)
     const newperson = new Person({
         name: nimi,
         number: number,
