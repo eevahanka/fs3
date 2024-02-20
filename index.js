@@ -90,31 +90,48 @@ const generateId = () => {
 }
 
 app.post('/api/persons', (request, response) => {
+  // console.log(request.body) 
   const body = request.body
-
   if ((!body.name) || (!body.number)){
     return response.status(400).json({ 
       error: 'content missing' 
     })
   }
-  for ( peep of persons) {
-    if (body.name == peep.name) {
-      return response.status(400).json({ 
-        error: 'name allready in phonebook' 
-    })
-  }
-}
+//   for ( peep of persons) {
+//     if (body.name == peep.name) {
+//       return response.status(400).json({ 
+//         error: 'name allready in phonebook' 
+//     })
+//   }
+// }
 
-  const person = {
-    id: generateId(),
+  const person = new Person({
+    // id: generateId(),
     name: body.name,
     number: body.number
-  }
+  })
 
-  persons = persons.concat(person)
-
-  response.json(person)
+  person.save().then(savedPerson =>{
+    response.json(person)
+  })
 })
+// app.post('/api/notes', (request, response) => {
+//   const body = request.body
+
+//   if (body.content === undefined) {
+//     return response.status(400).json({ error: 'content missing' })
+//   }
+
+//   const note = new Note({
+//     content: body.content,
+//     important: body.important || false,
+//   })
+
+//   note.save().then(savedNote => {
+//     response.json(savedNote)
+//   })
+// })
+
 
 app.delete('/api/persons/:id', (request, response) => {
   const id = Number(request.params.id)
