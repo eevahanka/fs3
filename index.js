@@ -73,16 +73,21 @@ function getRandomInt(max) {
   return Math.floor(Math.random() * max);
 }
 
-app.get('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id)
-  // console.log(id)
-  const person = persons.find(person => person.id === id)
-  // console.log(person)
-  if (person) {
+app.get('/api/persons/:id', (request, response, next) => {
+  Person.findById(request.params.id)
+  .then(person => {
     response.json(person)
-  } else {
-    response.status(404).end()
-  }
+  })
+  // const id = Number(request.params.id)
+  // // console.log(id)
+  // const person = persons.find(person => person.id === id)
+  // // console.log(person)
+  // if (person) {
+  //   response.json(person)
+  // } else {
+  //   response.status(404).end()
+  // }
+  .catch(error => next(error))
 })
 
 const generateId = () => {
@@ -172,11 +177,15 @@ const getInfoHtml = (nro_of_persons, date) => {
 } 
 
 app.get('/info', (request, response)=> {
-  const nro_of_persons = persons.length
-  const date = get_date_str()
-  response.send(
-    getInfoHtml(nro_of_persons, date)
-  )
+  Person.find({}).then(persons=>{
+    var count = Object.keys(persons).length;
+    const nro_of_persons = count
+    const date = get_date_str()
+    response.send(
+      getInfoHtml(nro_of_persons, date)
+    )
+  }) 
+ 
 })
 
 const errorHandler = (error, request, response, next) => {
